@@ -12,7 +12,7 @@ A site is a tree, directories are edges, and pages, forms and resources are node
  :site/backend :site.backend/php
  :site/routes
  (r/routes
-  (r/page "/" :name "root" :to #path "welcome/index" :via :route.method/get) ;; :via isn't required here since :get is the default
+  (r/page "/" :name "root" :to #pbnj/path "welcome/index" :via :route.method/get) ;; :via isn't required here since :get is the default
   (r/resource "entities" :doc "The core entities of the directory"
    (r/resource "reviews")
    (r/resource "images")
@@ -24,9 +24,7 @@ A site is a tree, directories are edges, and pages, forms and resources are node
 #+end_src
 
 * Paths
-Indicated with the #path reader macro, paths are resolved by the system
-by first looking for resource file by type (e.g. HTML, CSS, PHP, JavaScript).
-Then it will look for a source file by type (Phel, ClojureScript, Clojure, etc).
+Indicated with the #pbnj/path reader macro, paths are resolved by the system by first looking for resource file by type (e.g. HTML, CSS, PHP, JavaScript, or static assets). Then it will look for a source file by type (Phel, ClojureScript, Clojure, etc).
 
 * Resources
 
@@ -34,34 +32,34 @@ Then it will look for a source file by type (Phel, ClojureScript, Clojure, etc).
 #{{:route/name "entities"
    :route/method :route.method/get
    :route/path "/entities"
-   :route/src #path "entities/index"}
+   :route/src #pbnj/path "entities/index"}
   {:route/name "add_entity"
    :route/method :route.method/get
    :route/path "/entities/add"
-   :route/src #path "entities/add"}
+   :route/src #pbnj/path "entities/add"}
   {:route/name "create_entity"
    :route/method :route.method/post
    :route/formats #{:format/html :format/json}
    :route/path "/entities"
-   :route/src #path "entities/create"}
+   :route/src #pbnj/path "entities/create"}
   {:route/name "entity"
    :route/path "/entities/:entity_id"
    :route/method :route.method/get
    :route/formats #{:format/html :format/json}
-   :route/src #path "entities/show"}
+   :route/src #pbnj/path "entities/show"}
   {:route/name "edit_entity"
    :route/path "/entities/:entity_id/edit"
    :route/method :route.method/get
-   :route/src #path "entities/edit"}
+   :route/src #pbnj/path "entities/edit"}
   {:route/name "entity"
    :route/path "/entities/:entity_id"
    :route/method :route.method/put
-   :route/src #path "entities/update"}
+   :route/src #pbnj/path "entities/update"}
   {:route/name "remove_entity"
    :route/path "/entities/:entity_id"
    :route/method :route.method/delete
    :route/formats #{:format/html :format/json}
-   :route/src #path "entities/remove"}}
+   :route/src #pbnj/path "entities/remove"}}
 #+end_src clojure
 
 * Forms
@@ -71,11 +69,11 @@ Then it will look for a source file by type (Phel, ClojureScript, Clojure, etc).
   {:route/name "geo"
    :route/method :route.method/get
    :route/path "/entities/:entity_id/locations/:location_id/geo"
-   :route/src #path "entities/locations/geo/add"}
+   :route/src #pbnj/path "entities/locations/geo/add"}
   {:route/name "geo"
    :route/method :route.method/post
    :route/path "/entities/:entity_id/locations/:location_id/geo"
-   :route/src #path "entities/locations/geo/update"}
+   :route/src #pbnj/path "entities/locations/geo/update"}
   }
 #+end_src
 
@@ -86,15 +84,15 @@ Then it will look for a source file by type (Phel, ClojureScript, Clojure, etc).
  "/" {:route.tree/get #file "resources/welcome/index.html"
       :route.tree/children
       {"entities"
-       {:route.tree/get #phel "forest\\entities/list"
-        :route.tree/post #phel "forest\\entities/create"
+       {:route.tree/get #pbnj/path "entities/list"
+        :route.tree/post #pbnj/path "entities/create"
         :route.tree/children
-        {"add" {:route.tree/get #phel "forest\\entities/add"}
-         "edit" {:route.tree/get #phel "forest\\entities/edit"}
+        {"add" {:route.tree/get #pbnj/path "entities/add"}
+         "edit" {:route.tree/get #pbnj/path "entities/edit"}
          ":id"
-         {:route.tree/get #phel "forest\\entities/show"
-          :route.tree/put #phel "forest\\entities/update"
-          :route.tree/delete #phel "forest\\entities/remove"}
+         {:route.tree/get #pbnj/path "entities/show"
+          :route.tree/put #pbnj/path "entities/update"
+          :route.tree/delete #pbnj/path "entities/remove"}
         }
         ...
         }}
@@ -122,6 +120,7 @@ https://clojurescript.org
 Consider Phel https://github.com/phel-lang/phel-lang
 
 * HTML
+https://github.com/omcljs/om/blob/master/src/main/om/dom.cljc
 https://github.com/weavejester/hiccup
 
 * CSS
