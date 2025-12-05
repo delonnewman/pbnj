@@ -101,6 +101,20 @@ Then it will look for a source file by type (Phel, ClojureScript, Clojure, etc).
 }
 #+end_src
 
+#+begin_example
+target/
+ - index.html
+ - entities/
+  - index.php
+  - _list.inc.php 
+  - _create.inc.php
+  - _show.inc.php
+  - _update.inx.php
+  - add/index.php
+  - edit/index.php
+...
+#+end_example
+
 * JavaScript
 https://clojurescript.org
 
