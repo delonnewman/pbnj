@@ -8,8 +8,8 @@ A site is a tree, directories are edges, and pages, forms and resources are node
 
 {
  :site/name "Forest"
- :site/database {:db/url "sqlite://..."}
- :site/backend :site.backend/php
+ :site/database #url "sqlite://..."
+ :site/backend :pbnj.backend/php
  :site/routes
  (r/routes
   (r/page "/" :name "root" :to #pbnj/path "welcome/index" :via :get) ;; :via isn't required here since :get is the default
@@ -101,16 +101,32 @@ Indicated with the #pbnj/path reader macro, paths are resolved by the system by 
 
 #+begin_example
 target/
- - index.html
- - entities/
-  - index.php
-  - _list.inc.php 
-  - _create.inc.php
-  - _show.inc.php
-  - _update.inx.php
-  - add/index.php
-  - edit/index.php
-...
+ - config/
+   - database.php
+   - secrets.php
+ - public/
+  - .htaccess # handles url writing e.g. translating "/entities/1.json" to "/entities/index.php?entity_id=1&format=json"
+  - index.html
+  - sitemap.xml
+  - favicon.ico
+  - assets/ # bundled assets
+   - styles/
+    - site.css
+   - scripts/
+    - site.js
+    - site.js.map
+   - images/
+  - _layouts/
+   - site.php
+  - entities/ # directory structure of PHP, HTML or both
+   - index.php
+   - _list.php 
+   - _create.php
+   - _show.php
+   - _update.php
+   - add/index.php
+   - edit/index.php
+ ...
 #+end_example
 
 * JavaScript
@@ -118,6 +134,10 @@ https://clojurescript.org
 
 * PHP
 Consider Phel https://github.com/phel-lang/phel-lang
+https://github.com/rodnaph/clj-php
+https://github.com/john-shaffer/php-clj
+https://github.com/jphp-group/jphp
+https://github.com/haileys/Fructose
 
 * HTML
 https://github.com/omcljs/om/blob/master/src/main/om/dom.cljc
