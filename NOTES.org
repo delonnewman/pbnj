@@ -133,11 +133,11 @@ target/
 https://clojurescript.org
 
 * PHP
-Consider Phel https://github.com/phel-lang/phel-lang
+https://github.com/phel-lang/phel-lang
 https://github.com/rodnaph/clj-php
 https://github.com/john-shaffer/php-clj
 https://github.com/jphp-group/jphp
-https://github.com/haileys/Fructose
+https://symfony.com
 
 * HTML
 https://github.com/omcljs/om/blob/master/src/main/om/dom.cljc
