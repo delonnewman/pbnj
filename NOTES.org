@@ -1,0 +1,106 @@
+#+title: Notes
+
+A site is a tree, directories are edges, and pages, forms and resources are nodes.
+
+#+begin_src clojure
+(ns forest
+  (require [pbnj.routing as :r]))
+
+{
+ :site/name "Forest"
+ :site/database {:db/url "sqlite://..."}
+ :site/backend :site.backend/php
+ :site/routes
+ (r/routes
+  (r/page "/" :name "root" :to #path "welcome/index" :via :route.method/get) ;; :via isn't required here since :get is the default
+  (r/resource "entities" :doc "The core entities of the directory"
+   (r/resource "reviews")
+   (r/resource "images")
+   (r/resource "links")
+   (r/resource "categories")
+   (r/resource "locations"
+    (r/form "geo" :formats #{:format/json}))))
+}
+#+end_src
+
+* Paths
+Indicated with the #path reader macro, paths are resolved by the system
+by first looking for resource file by type (e.g. html, css, php, javascript).
+If nothing is found it will look for an action that coresponds to the path
+within the root namespace.
+
+* Resources
+
+#+begin_src clojure
+#{{:route/name "entities"
+   :route/method :route.method/get
+   :route/path "/entities"
+   :route/src #path "entities/index"}
+  {:route/name "add_entity"
+   :route/method :route.method/get
+   :route/path "/entities/add"
+   :route/src #path "entities/add"}
+  {:route/name "create_entity"
+   :route/method :route.method/post
+   :route/formats #{:format/html :format/json}
+   :route/path "/entities"
+   :route/src #path "entities/create"}
+  {:route/name "entity"
+   :route/path "/entities/:entity_id"
+   :route/method :route.method/get
+   :route/formats #{:format/html :format/json}
+   :route/src #path "entities/show"}
+  {:route/name "edit_entity"
+   :route/path "/entities/:entity_id/edit"
+   :route/method :route.method/get
+   :route/src #path "entities/edit"}
+  {:route/name "entity"
+   :route/path "/entities/:entity_id"
+   :route/method :route.method/put
+   :route/src #path "entities/update"}
+  {:route/name "remove_entity"
+   :route/path "/entities/:entity_id"
+   :route/method :route.method/delete
+   :route/formats #{:format/html :format/json}
+   :route/src #path "entities/remove"}}
+#+end_src clojure
+
+* Forms
+
+#+begin_src clojure
+#{
+  {:route/name "geo"
+   :route/method :route.method/get
+   :route/path "/entities/:entity_id/locations/:location_id/geo"
+   :route/src #path "entities/locations/geo/add"}
+  {:route/name "geo"
+   :route/method :route.method/post
+   :route/path "/entities/:entity_id/locations/:location_id/geo"
+   :route/src #path "entities/locations/geo/update"}
+  }
+#+end_src
+
+* Tree
+
+#+begin_src clojure
+{
+ "/" {:route.tree/get #file "resources/welcome/index.html"
+      :route.tree/children
+      {"entities"
+       {:route.tree/get #'forest.entities/list
+        :route.tree/post #'forest.entities/create
+        :route.tree/children
+        {"add" {:route.tree/get #'forest.entities/add}
+         "edit" {:route.tree/get #'forest.entities/edit}
+         ":id"
+         {:route.tree/get #'forest.entities/show
+          :route.tree/put #'forest.entities/update
+          :route.tree/delete #'forest.entities/remove}
+        }
+        ...
+        }}
+}
+#+end_src
+
+* PHP
+Consider Phel https://github.com/phel-lang/phel-lang
