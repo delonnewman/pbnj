@@ -87,15 +87,15 @@ within the root namespace.
  "/" {:route.tree/get #file "resources/welcome/index.html"
       :route.tree/children
       {"entities"
-       {:route.tree/get #'forest.entities/list
-        :route.tree/post #'forest.entities/create
+       {:route.tree/get #phel "forest/entities/list"
+        :route.tree/post #phel "forest/entities/create"
         :route.tree/children
-        {"add" {:route.tree/get #'forest.entities/add}
-         "edit" {:route.tree/get #'forest.entities/edit}
+        {"add" {:route.tree/get #phel "forest/entities/add"}
+         "edit" {:route.tree/get #phel "forest/entities/edit"}
          ":id"
-         {:route.tree/get #'forest.entities/show
-          :route.tree/put #'forest.entities/update
-          :route.tree/delete #'forest.entities/remove}
+         {:route.tree/get #phel "forest/entities/show"
+          :route.tree/put #phel "forest/entities/update"
+          :route.tree/delete #phel "forest/entities/remove"}
         }
         ...
         }}
