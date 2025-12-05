@@ -25,9 +25,8 @@ A site is a tree, directories are edges, and pages, forms and resources are node
 
 * Paths
 Indicated with the #path reader macro, paths are resolved by the system
-by first looking for resource file by type (e.g. html, css, php, javascript).
-If nothing is found it will look for an action that coresponds to the path
-within the root namespace.
+by first looking for resource file by type (e.g. HTML, CSS, PHP, JavaScript).
+Then it will look for a source file by type (Phel, ClojureScript, Clojure, etc).
 
 * Resources
 
@@ -87,20 +86,29 @@ within the root namespace.
  "/" {:route.tree/get #file "resources/welcome/index.html"
       :route.tree/children
       {"entities"
-       {:route.tree/get #phel "forest/entities/list"
-        :route.tree/post #phel "forest/entities/create"
+       {:route.tree/get #phel "forest\\entities/list"
+        :route.tree/post #phel "forest\\entities/create"
         :route.tree/children
-        {"add" {:route.tree/get #phel "forest/entities/add"}
-         "edit" {:route.tree/get #phel "forest/entities/edit"}
+        {"add" {:route.tree/get #phel "forest\\entities/add"}
+         "edit" {:route.tree/get #phel "forest\\entities/edit"}
          ":id"
-         {:route.tree/get #phel "forest/entities/show"
-          :route.tree/put #phel "forest/entities/update"
-          :route.tree/delete #phel "forest/entities/remove"}
+         {:route.tree/get #phel "forest\\entities/show"
+          :route.tree/put #phel "forest\\entities/update"
+          :route.tree/delete #phel "forest\\entities/remove"}
         }
         ...
         }}
 }
 #+end_src
 
+* JavaScript
+https://clojurescript.org
+
 * PHP
 Consider Phel https://github.com/phel-lang/phel-lang
+
+* HTML
+https://github.com/weavejester/hiccup
+
+* CSS
+https://github.com/noprompt/garden
