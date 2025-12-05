@@ -12,7 +12,7 @@ A site is a tree, directories are edges, and pages, forms and resources are node
  :site/backend :site.backend/php
  :site/routes
  (r/routes
-  (r/page "/" :name "root" :to #pbnj/path "welcome/index" :via :route.method/get) ;; :via isn't required here since :get is the default
+  (r/page "/" :name "root" :to #pbnj/path "welcome/index" :via :get) ;; :via isn't required here since :get is the default
   (r/resource "entities" :doc "The core entities of the directory"
    (r/resource "reviews")
    (r/resource "images")
