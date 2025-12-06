@@ -27,6 +27,15 @@
     [""]
     (str/split (.name path) #"/")))
 
+(defn locate
+  [path & {:keys [parents formats]}]
+  (->>
+   (map
+    (fn [parent format]
+      (path->file parent path (name format)))
+    parents formats)
+   (filter java.io.File/.exists)))
+
 (comment
   (path->file "resources" #pbnj/path "welcome/index" "html")
   (path->file "resources" #pbnj/path "welcome/index" ".html")
@@ -36,4 +45,5 @@
   (path? "hey")
   (parts #pbnj/path "entities/list")
   (parts #pbnj/path "/")
+  (locate #pbnj/path "welcome/index" :parents #{"test/resources"} :formats #{:html})
   )
