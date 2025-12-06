@@ -4,7 +4,8 @@
 
 (deftype Path [name])
 
-(def path-reader ->Path)
+(def str->path ->Path)
+(def path-reader str->path)
 
 (defn path? [p]
   (instance? Path p))
@@ -21,6 +22,11 @@
   ([parent path] (.exists (path->file parent path)))
   ([parent path ext] (.exists (path->file parent path ext))))
 
+(defn parts [path]
+  (if (= (.name path) "/")
+    [""]
+    (str/split (.name path) #"/")))
+
 (comment
   (path->file "resources" #pbnj/path "welcome/index" "html")
   (path->file "resources" #pbnj/path "welcome/index" ".html")
@@ -28,4 +34,6 @@
   (exists? "src/clj" #pbnj/path "pbnj/paths" "js")
   (path? #pbnj/path "entities/list")
   (path? "hey")
+  (parts #pbnj/path "entities/list")
+  (parts #pbnj/path "/")
   )

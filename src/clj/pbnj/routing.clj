@@ -1,10 +1,12 @@
-(ns pbnj.routing)
+(ns pbnj.routing
+  (:require [pbnj.paths :as path]
+            [clojure.string :as str]))
 
 (defn page
   [path
    & {:keys [name to via formats]
       :or {via :get formats #{:html}}}]
-  {:route/path path
+  {:route/path (path/str->path path)
    :route/src to
    :route/name name
    :route/method via
@@ -22,15 +24,26 @@
   ([r] (if (route? r) #{r} r))
   ([r & rs] (set (concat (routes r) rs))))
 
+(defn route-tree [rs]
+  (let [index (group-by #(-> (:route/path %) path/parts) rs)
+        keys (sort-by count (keys index))]
+    (reduce
+     (fn [tree parts]
+       (assoc-in tree parts {:route.tree/children (index parts)}))
+     {} keys)
+    ))
+
 (comment
   (page "/" :name "root" :to #pbnj/path "welcome/index")
 
   (let [r (page "/" :name "root" :to #pbnj/path "welcome/index")]
     (route? r))
 
-  (routes
-   (page "/" :name "root" :to #pbnj/path "welcome/index")
-   (page "/entities" :name "entities" :to #pbnj/path "entities/list")
-   (page "/entities/:id" :name "entities" :to #pbnj/path "entities/show")
-   (page "/entities/:id" :name "entities" :to #pbnj/path "entities/update" :via :post))
+  (route-tree
+   (routes
+    (page "/" :name "root" :to #pbnj/path "welcome/index")
+    (page "/entities" :name "entities" :to #pbnj/path "entities/list")
+    (page "/entities/:entity_id" :name "entities" :to #pbnj/path "entities/show")
+    (page "/entities/:entity_id" :name "entities" :to #pbnj/path "entities/update" :via :post))
+   )
   )
