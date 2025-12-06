@@ -15,7 +15,8 @@
    (map? r)
    (contains? r :route/path)
    (contains? r :route/src)
-   (contains? r :route/method)))
+   (contains? r :route/method)
+   (contains? r :route/formats)))
 
 (defn routes
   ([r] (if (route? r) #{r} r))
