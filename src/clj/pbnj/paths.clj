@@ -4,7 +4,7 @@
 
 (deftype Path [name])
 
-(defn path-reader [s] (Path. s))
+(def path-reader ->Path)
 
 (defn path? [p]
   (instance? Path p))
