@@ -1,6 +1,5 @@
 (ns pbnj.routing
-  (:require [pbnj.paths :as path]
-            [clojure.string :as str]))
+  (:require [pbnj.paths :as path]))
 
 (defn page
   [path
