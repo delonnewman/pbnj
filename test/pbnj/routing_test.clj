@@ -1,6 +1,5 @@
 (ns pbnj.routing-test
   (:require [pbnj.routing :as r]
-            [pbnj.paths :as path]
             [clojure.test :refer :all]))
 
 (deftest- route-tree-test
