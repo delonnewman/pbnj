@@ -28,7 +28,7 @@
         keys (sort-by count (keys index))]
     (reduce
      (fn [tree parts]
-       (assoc-in tree parts {:route.tree/children (index parts)}))
+       (assoc-in tree parts {}))
      {} keys)
     ))
 
