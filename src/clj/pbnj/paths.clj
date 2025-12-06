@@ -7,6 +7,9 @@
 (defn path-reader [string]
   (Path. string))
 
+(defn path? [p]
+  (instance? Path p))
+
 (defn path->file
   ([path] (io/as-file (.name path)))
   ([parent path] (io/file parent (.name path)))
@@ -23,4 +26,6 @@
   (path->file "resources" #pbnj/path "welcome/index" "html")
   (path->file "resources" #pbnj/path "welcome/index" ".html")
   (path-exists? "src/clj" #pbnj/path "pbnj/paths" "clj")
+  (path? #pbnj/path "entities/list")
+  (path? "hey")
   )
