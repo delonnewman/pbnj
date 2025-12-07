@@ -26,8 +26,8 @@
 (def route-methods #{:get :post :put :delete})
 
 (defn route->tree-node [r]
-  (if-let [method (route-methods (:route/src r))]
-    (let [key (keyword "route.tree" (name (:route/method r)))]
+  (if-let [method (route-methods (:route/method r))]
+    (let [key (keyword "route.tree" (name method))]
       {key (:route/path r)})
     (throw (Error. "Invalid method"))))
 
