@@ -10,6 +10,8 @@
 (defn path? [p]
   (instance? Path p))
 
+(defn root? [p] (= (.name p) "/"))
+
 (defn path->file
   ([path] (io/as-file (.name path)))
   ([parent path] (io/file parent (.name path)))
@@ -23,7 +25,7 @@
   ([parent path ext] (.exists (path->file parent path ext))))
 
 (defn parts [path]
-  (if (= (.name path) "/")
+  (if (root? path)
     [""]
     (str/split (.name path) #"/")))
 
@@ -39,11 +41,16 @@
 (comment
   (path->file "resources" #pbnj/path "welcome/index" "html")
   (path->file "resources" #pbnj/path "welcome/index" ".html")
+
   (exists? "src/clj" #pbnj/path "pbnj/paths" "clj")
   (exists? "src/clj" #pbnj/path "pbnj/paths" "js")
+
   (path? #pbnj/path "entities/list")
   (path? "hey")
+
   (parts #pbnj/path "entities/list")
   (parts #pbnj/path "/")
+
   (locate #pbnj/path "welcome/index" :parents #{"test/resources"} :formats #{:html})
+  (io/file "test/resources/welcome/index.html")
   )
