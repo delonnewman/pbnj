@@ -6,14 +6,13 @@
 
 (deftest locate-test
   (let [expected (io/file "test/resources/welcome/index.html")
-        actual (->
-                #pbnj/path "welcome/index"
-                (path/locate :parents #{"test/resources"} :formats #{:html})
-                first)]
+        actual (-> #pbnj/path "welcome/index"
+                   (path/locate :parents #{"test/resources"} :formats #{:html})
+                   first)]
     (is (= expected actual))))
 
 (deftest path->file-test
-  (let [expected (io/as-file "resources/welcome/index.html")]
+  (let [expected (io/file "resources/welcome/index.html")]
     (testing "just path"
       (is (= expected (path/path->file #pbnj/path "resources/welcome/index.html"))))
     (testing "parent and path"
