@@ -39,9 +39,6 @@
    (filter java.io.File/.exists)))
 
 (comment
-  (path->file "resources" #pbnj/path "welcome/index" "html")
-  (path->file "resources" #pbnj/path "welcome/index" ".html")
-
   (exists? "src/clj" #pbnj/path "pbnj/paths" "clj")
   (exists? "src/clj" #pbnj/path "pbnj/paths" "js")
 
