@@ -14,7 +14,10 @@
 
 (defn- with-ext
   [file ext]
-  (let [ext (if (str/starts-with? ext ".") (.substring ext 1) ext)]
+  (let [ext
+        (if (str/starts-with? ext ".")
+          (.substring ext 1)
+          ext)]
     (str file "." ext)))
 
 (comment
@@ -23,31 +26,31 @@
   )
 
 (defn path->file
-  ([path] (io/as-file (.name path)))
-  ([parent path] (io/file parent (.name path)))
+  ([path]
+   (io/as-file (.name path)))
+  ([parent path]
+   (io/file parent (.name path)))
   ([parent path ext]
    (io/file parent (with-ext (.name path) ext))))
 
 (defn exists?
-  ([path] (.exists (path->file path)))
-  ([parent path] (.exists (path->file parent path)))
-  ([parent path ext] (.exists (path->file parent path ext))))
-
-(defn path
-  [& parts]
-  (->> parts
-       (map #(if (path? %) (.name %) (str %)))
-       (str/join "/")
-       ->Path))
+  ([path]
+   (.exists (path->file path)))
+  ([parent path]
+   (.exists (path->file parent path)))
+  ([parent path ext]
+   (.exists (path->file parent path ext))))
 
 (defn fetch
-  ([path] (when (exists? path) path))
-  ([parent path']
-   (when (exists? parent path')
-     (path parent path')))
-  ([parent path' ext]
-   (when (exists? parent path' ext)
-     (path parent (with-ext (.name path') ext)))))
+  ([path]
+   (when (exists? path)
+     (path->file path)))
+  ([parent path]
+   (when (exists? parent path)
+     (path->file parent path)))
+  ([parent path ext]
+   (when (exists? parent path ext)
+     (path->file parent path ext))))
 
 (defn parts [path]
   (if (root? path)
@@ -58,15 +61,16 @@
   [path & {:keys [parents formats]}]
   (->>
    (map
-    (fn [parent format]
-      (path->file parent path (name format)))
+    #(path->file %1 path (name %2))
     parents formats)
-   (filter java.io.File/.exists)))
+   #_(filter java.io.File/.exists)))
 
 (comment
   (fetch #pbnj/path "test/resources/welcome/index.html")
   (fetch #pbnj/path "test/resources/welcome/index.php")
-  (.name (fetch "test/resources" #pbnj/path "welcome/index" "html"))
+  (fetch "test/resources" #pbnj/path "welcome/index" "html")
 
-  (path "test/resources" #pbnj/path "welcome" "index.html")
+  (locate #pbnj/path "welcome/index" :parents #{"test/resources"} :formats #{:html :php :js})
+
+  (zipmap #{1} #{:a :b :c})
   )
