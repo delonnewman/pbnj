@@ -32,16 +32,14 @@
     (throw (Error. "Invalid method"))))
 
 (defn route-tree [rs]
-  (let [index (group-by #(-> (:route/path %) path/parts) rs)
-        keys (sort-by count (keys index))]
-    (reduce
-     (fn [tree parts]
-       (assoc-in tree parts {}))
-     {} keys)
+  (let [nodes (map (juxt :route/path route->tree-node) rs)
+        index (->> nodes (group-by (fn [[path _]] (path/parts path))))]
+    index
     ))
 
 (comment
   (route->tree-node (page "/" :name "root" :to #pbnj/path "welcome/index"))
+  (route-tree #{(page "/" :name "root" :to #pbnj/path "welcome/index")})
 
   (let [r (page "/" :name "root" :to #pbnj/path "welcome/index")]
     (route? r))
