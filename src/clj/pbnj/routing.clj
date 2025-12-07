@@ -23,6 +23,14 @@
   ([r] (if (route? r) #{r} r))
   ([r & rs] (set (concat (routes r) rs))))
 
+(def route-methods #{:get :post :put :delete})
+
+(defn route->tree-node [r]
+  (if-let [method (route-methods (:route/src r))]
+    (let [key (keyword "route.tree" (name (:route/method r)))]
+      {key (:route/path r)})
+    (throw (Error. "Invalid method"))))
+
 (defn route-tree [rs]
   (let [index (group-by #(-> (:route/path %) path/parts) rs)
         keys (sort-by count (keys index))]
@@ -33,7 +41,7 @@
     ))
 
 (comment
-  (page "/" :name "root" :to #pbnj/path "welcome/index")
+  (route->tree-node (page "/" :name "root" :to #pbnj/path "welcome/index"))
 
   (let [r (page "/" :name "root" :to #pbnj/path "welcome/index")]
     (route? r))
