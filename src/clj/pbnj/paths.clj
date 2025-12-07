@@ -37,17 +37,3 @@
       (path->file parent path (name format)))
     parents formats)
    (filter java.io.File/.exists)))
-
-(comment
-  (exists? "src/clj" #pbnj/path "pbnj/paths" "clj")
-  (exists? "src/clj" #pbnj/path "pbnj/paths" "js")
-
-  (path? #pbnj/path "entities/list")
-  (path? "hey")
-
-  (parts #pbnj/path "entities/list")
-  (parts #pbnj/path "/")
-
-  (locate #pbnj/path "welcome/index" :parents #{"test/resources"} :formats #{:html})
-  (io/file "test/resources/welcome/index.html")
-  )
