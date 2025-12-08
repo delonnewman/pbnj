@@ -117,7 +117,7 @@ target/
     - site.js.map
    - images/
   - _layouts/
-   - site.php
+   - default.php
   - entities/ # directory structure of PHP, HTML or both
    - index.php
    - _list.php 
