@@ -1,11 +1,12 @@
 (ns pbnj.routing
-  (:require [pbnj.paths :as path]))
+  (:require [pbnj.paths :as path]
+            [clojure.string :as str]))
 
 (defn page
   [path
    & {:keys [name to via formats]
       :or {via :get formats #{:html}}}]
-  {:route/path (path/str->path path)
+  {:route/path path
    :route/src to
    :route/name name
    :route/method via
@@ -28,14 +29,23 @@
 (defn route->tree-node [r]
   (if-let [method (route-methods (:route/method r))]
     (let [key (keyword "route.tree" (name method))]
-      {key (:route/path r)})
+      {key (:route/src r)})
     (throw (Error. "Invalid method"))))
 
+(defn path-parts
+  [str]
+  (if (= str "/")
+    [""]
+    (str/split str #"/")))
+
 (defn route-tree [rs]
-  (let [nodes (map (juxt :route/path route->tree-node) rs)
-        index (->> nodes (group-by (fn [[path _]] (path/parts path))))]
+  (case (count rs)
+    0 nil
+    :else
+    (let [nodes (map (juxt :route/path route->tree-node) rs)
+          index (->> nodes (group-by (fn [[path _]] (path-parts path))))]
     index
-    ))
+    )))
 
 (comment
   (route->tree-node (page "/" :name "root" :to #pbnj/path "welcome/index"))
