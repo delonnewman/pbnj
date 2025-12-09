@@ -129,6 +129,13 @@ target/
  ...
 #+end_example
 
+* Compiler
+#+begin_example
+Site Map +-> Route Tree +-> sitemap.xml
+                        |
+                        +-> directory / pages
+#+end_example
+
 * Runtime
 ** JavaScript
 https://clojurescript.org
@@ -147,3 +154,6 @@ https://github.com/weavejester/hiccup
 ** CSS
 https://github.com/noprompt/garden
 https://github.com/jramosg/color-tools
+
+* CMS
+https://keystatic.com
