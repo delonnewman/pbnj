@@ -60,10 +60,13 @@
 (defn locate
   [path & {:keys [parents formats]}]
   (->>
-   (map
-    #(path->file %1 path (name %2))
-    parents formats)
-   #_(filter java.io.File/.exists)))
+   formats
+   (mapcat
+    (fn [format]
+      (map
+       (fn [parent]
+         (path->file parent path (name format))) parents)))
+   (filter java.io.File/.exists)))
 
 (comment
   (fetch #pbnj/path "test/resources/welcome/index.html")
