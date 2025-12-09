@@ -2,7 +2,7 @@
   (:require [pbnj.routing :as r]
             [clojure.test :refer :all]))
 
-(deftest- route-tree-test
+(deftest route-tree-test
   (testing "simple"
     (let [tree
           (r/route-tree

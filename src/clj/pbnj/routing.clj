@@ -26,30 +26,34 @@
 
 (def route-methods #{:get :post :put :delete})
 
-(defn route->tree-node [r]
+(defn route-method [r]
   (if-let [method (route-methods (:route/method r))]
-    (let [key (keyword "route.tree" (name method))]
-      {key (:route/src r)})
+    method
     (throw (Error. "Invalid method"))))
 
 (defn path-parts
-  [str]
-  (if (= str "/")
-    [""]
-    (str/split str #"/")))
+  [r]
+  (let [path (:route/path r)]
+    (if (= path "/")
+      [""]
+      (str/split path #"/"))))
+
+(defn route->tree-node [r]
+  (let [method (route-method r)
+        parts (path-parts r)
+        key (keyword "route.tree" (name method))]
+    {(first parts) {key (:route/src r)}}
+    ))
 
 (defn route-tree [rs]
   (case (count rs)
-    0 nil
-    :else
-    (let [nodes (map (juxt :route/path route->tree-node) rs)
-          index (->> nodes (group-by (fn [[path _]] (path-parts path))))]
-    index
-    )))
+    0 {}
+    (route->tree-node (first rs))
+  ))
+
 
 (comment
   (route->tree-node (page "/" :name "root" :to #pbnj/path "welcome/index"))
-  (route-tree #{(page "/" :name "root" :to #pbnj/path "welcome/index")})
 
   (let [r (page "/" :name "root" :to #pbnj/path "welcome/index")]
     (route? r))

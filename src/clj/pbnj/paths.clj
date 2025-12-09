@@ -5,7 +5,15 @@
 (deftype Path [namespace name]
   clojure.lang.Named
   (getName [this] (.name this))
-  (getNamespace [this] (.namespace this)))
+  (getNamespace [this] (.namespace this))
+
+  Object
+  (toString [this] (str "#path \"" (.namespace this) "#" (.name this) "\""))
+  (equals [this other]
+    (and
+     (= (.namespace this) (.namespace other))
+     (= (.name this) (.name other))))
+  )
 
 (defn path->str
   [path]
@@ -100,5 +108,5 @@
 
   (locate #path "welcome#index" :parents #{"test/resources"} :formats #{:html :php :js})
 
-  #path "welcome#index"
+  (= #path "welcome#index" #path "welcome#index")
   )
