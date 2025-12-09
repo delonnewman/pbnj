@@ -52,11 +52,14 @@
   (let [ns (str/replace (namespace path) #"/" ".")]
     (symbol ns (name path))))
 
+(def path->var (comp find-var path->symbol))
+
 (comment
   (path->fs-path (str->path "welcome#index"))
   (path->fs-path (str->path "welcome#index") "html")
   #pbnj/path "welcome#index"
   (path->symbol #path "pbnj/paths#str->path")
+  (path->var #path "pbnj/paths#str->path")
   )
 
 (defn path->file
