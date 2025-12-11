@@ -13,7 +13,12 @@
     (and
      (= (.namespace this) (.namespace other))
      (= (.name this) (.name other))))
-  )
+  (hashCode [this]
+    (hash-combine (hash (.namespace this)) (hash (.name this)))))
+
+(comment
+  (-> (->Path "welcome" "index") .toString)
+)
 
 (defn path->str
   [path]
@@ -65,7 +70,7 @@
 (comment
   (path->fs-path (str->path "welcome#index"))
   (path->fs-path (str->path "welcome#index") "html")
-  #pbnj/path "welcome#index"
+  #path "welcome#index"
   (path->symbol #path "pbnj/paths#str->path")
   (path->var #path "pbnj/paths#str->path")
   )
