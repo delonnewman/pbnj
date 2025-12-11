@@ -6,11 +6,11 @@
   [path
    & {:keys [name to via formats]
       :or {via :get formats #{:html}}}]
-  {:route/path path
-   :route/src to
-   :route/name name
-   :route/method via
-   :route/formats formats})
+  #:route{:path path
+          :src to
+          :name name
+          :method via
+          :formats formats})
 
 (defn route? [r]
   (and
@@ -29,7 +29,7 @@
 (defn route-method [r]
   (if-let [method (route-methods (:route/method r))]
     method
-    (throw (Error. "Invalid method"))))
+    (throw (Error. (str "Invalid method " (:route/method r))))))
 
 (defn path-parts
   [r]
@@ -40,8 +40,8 @@
 
 (defn route->tree-node [r]
   (let [method (route-method r)
-        parts (path-parts r)
-        key (keyword "route.tree" (name method))]
+        parts  (path-parts r)
+        key    (keyword "route.tree" (name method))]
     {(first parts) {key (:route/src r)}}
     ))
 
@@ -54,6 +54,9 @@
 
 (comment
   (route->tree-node (page "/" :name "root" :to #pbnj/path "welcome/index"))
+  (route-tree #{(page "/" :name "root" :to #pbnj/path "welcome/index")})
+  (route-method (page "/" :name "root" :to #pbnj/path "welcome/index"))
+  (route-method (page "/" :name "root" :to #pbnj/path "welcome/index" :via :options))
 
   (let [r (page "/" :name "root" :to #pbnj/path "welcome/index")]
     (route? r))
