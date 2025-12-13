@@ -7,5 +7,5 @@
     (let [tree
           (r/route-tree
            (r/routes
-            (r/page "/" :to #path "welcome#index" :name "root")))]
+            (r/route "/" :to #path "welcome#index" :name "root")))]
       (is (= tree {"" {:route.tree/get #path "welcome#index"}})))))
