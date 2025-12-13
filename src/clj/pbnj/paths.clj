@@ -8,13 +8,16 @@
   (getNamespace [this] (.namespace this))
 
   Object
-  (toString [this] (str (.namespace this) "#" (.name this)))
+  (toString [this]
+    (str (.namespace this) "#" (.name this)))
   (equals [this other]
     (and
      (= (.namespace this) (.namespace other))
      (= (.name this) (.name other))))
   (hashCode [this]
-    (hash-combine (hash (.namespace this)) (hash (.name this)))))
+    (hash-combine
+     (hash (.namespace this))
+     (hash (.name this)))))
 
 (comment
   (-> (->Path "welcome" "index") .toString)

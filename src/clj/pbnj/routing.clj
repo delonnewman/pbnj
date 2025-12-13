@@ -1,5 +1,6 @@
 (ns pbnj.routing
-  (:require [pbnj.paths :as path]
+  (:refer-clojure :exclude [get])
+  (:require [pbnj.paths :as path :refer [->Path]]
             [clojure.string :as str]))
 
 (defn route
@@ -14,8 +15,8 @@
 
 (defmacro ^:private router-form [method]
   `(def ~(symbol (name method))
-     (fn [path# & args#]
-       (apply route (cons path# (concat args# (list :via #{~method})))))))
+     (fn [path# & opts#]
+       (apply route (cons path# (cons :via (cons #{~method} opts#)))))))
 
 (router-form :get)
 (router-form :post)
@@ -23,7 +24,8 @@
 (router-form :delete)
 
 (comment
-  (get "/" :to #path "welcome#index")
+  (macroexpand '(router-form :get))
+  (get "/" :to #path "welcome#index" :name "hey")
   )
 
 (defn route? [r]
@@ -38,7 +40,41 @@
   ([r] (if (route? r) #{r} r))
   ([r & rs] (set (concat (routes r) rs))))
 
+(defn resources
+  ([key]
+   (let [plural (name key) singular plural]
+     (routes
+      (get (str "/" plural)
+           :to (->Path plural "list")
+           :name plural)
+      (get (str "/" plural "/new")
+           :to (->Path plural "new")
+           :name (str "new_" singular))
+      (post (str "/" plural)
+            :to (->Path plural "create")
+            :name plural)
+      (get (str "/" plural "/:id")
+           :to (->Path plural "show")
+           :name (str "new_" singular))
+      (get (str "/" plural "/:id/edit")
+           :to (->Path plural "edit")
+           :name (str "edit_" singular))
+      (route (str "/" plural "/:id")
+             :to (->Path plural "edit")
+             :name (str "update_" singular)
+             :via #{:post :put})
+      (delete (str "/" plural "/:id")
+              :to (->Path plural "remove")
+              :name (str "delete_" singular)))))
+   ([key & keys]
+    (routes
+     (resources key)
+     (apply routes (map resources keys)))))
+
+
 (comment
+  (resources :photos :recordings)
+  
   (let [r (route "/" :name "root" :to #pbnj/path "welcome/index")]
     (route? r))
 
