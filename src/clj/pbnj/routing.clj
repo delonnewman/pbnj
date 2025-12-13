@@ -5,12 +5,26 @@
 (defn route
   [path
    & {:keys [name to via formats]
-      :or {via :get formats #{:html}}}]
+      :or {via #{:get} formats #{:html}}}]
   #:route{:path path
           :src to
           :name name
           :methods via
           :formats formats})
+
+(defmacro router-form [method]
+  `(def ~(symbol (name method))
+     (fn [path# & args#]
+       (apply route (cons path# (concat args# (list :via #{~method})))))))
+
+(router-form :get)
+(router-form :post)
+(router-form :put)
+(router-form :delete)
+
+(comment
+  (get "/" :to #path "welcome#index")
+  )
 
 (defn route? [r]
   (and
