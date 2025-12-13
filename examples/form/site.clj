@@ -6,8 +6,8 @@
 
 (def routes
   (r/routes
-   (r/route "/" :to #path "contacts#new", :via #{:get})
-   (r/route "/" :to #path "contacts#create" :via #{:post})))
+   (r/get "/" :to #path "contacts#new")
+   (r/post "/" :to #path "contacts#create")))
 
 (defn build []
   (s/build site))
