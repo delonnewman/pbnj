@@ -12,7 +12,7 @@
           :methods via
           :formats formats})
 
-(defmacro router-form [method]
+(defmacro ^:private router-form [method]
   `(def ~(symbol (name method))
      (fn [path# & args#]
        (apply route (cons path# (concat args# (list :via #{~method})))))))
