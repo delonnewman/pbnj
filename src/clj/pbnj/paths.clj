@@ -8,7 +8,7 @@
   (getNamespace [this] (.namespace this))
 
   Object
-  (toString [this] (str "#path \"" (.namespace this) "#" (.name this) "\""))
+  (toString [this] (str (.namespace this) "#" (.name this)))
   (equals [this other]
     (and
      (= (.namespace this) (.namespace other))
@@ -20,10 +20,6 @@
   (-> (->Path "welcome" "index") .toString)
 )
 
-(defn path->str
-  [path]
-  (str (namespace path) "#" (name path)))
-
 (defn str->path
   [str]
   (let [[ns name] (str/split str #"#")]
@@ -32,8 +28,8 @@
 (comment
   (name (->Path "welcome" "index"))
   (namespace (->Path "welcome" "index"))
-  (path->str (->Path "welcome" "index"))
-  (path->str (str->path "welcome#index"))
+  (str (->Path "welcome" "index"))
+  (str (str->path "welcome#index"))
 )
 
 (def path-reader str->path)
