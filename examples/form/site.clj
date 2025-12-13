@@ -6,9 +6,8 @@
 
 (def routes
   (r/routes
-   (r/page "/" :to #path "contacts#new")
-   (r/resource "contacts")
-   ))
+   (r/route "/" :to #path "contacts#new", :via #{:get})
+   (r/route "/" :to #path "contacts#create" :via #{:post})))
 
 (defn build []
   (s/build site))
