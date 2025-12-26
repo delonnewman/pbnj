@@ -43,3 +43,8 @@
   (let [root #path "welcome#index"
         formats #{:html :json}]
     (is (= formats (path/path-formats (path/with-formats root formats))))))
+
+(deftest with-parents-test
+  (let [root #path "welcome#index"
+        parents #{"test/resources"}]
+    (is (= parents (path/path-parents (path/with-parents root parents))))))
