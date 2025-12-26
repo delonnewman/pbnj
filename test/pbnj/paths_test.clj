@@ -38,3 +38,8 @@
 (deftest with-ext-test
   (let [root #path "welcome#index"]
     (is (= "html" (path/path-ext (path/with-ext root "html"))))))
+
+(deftest with-formats-test
+  (let [root #path "welcome#index"
+        formats #{:html :json}]
+    (is (= formats (path/path-formats (path/with-formats root formats))))))

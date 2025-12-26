@@ -64,7 +64,7 @@
 (def with-parents (meta-writer ::parents))
 (def path-parents (meta-reader ::parents))
 
-(def with-formats (meta-writer ::parents))
+(def with-formats (meta-writer ::formats))
 (def path-formats (meta-reader ::formats))
 
 (comment
