@@ -4,9 +4,11 @@
    [clojure.java.io :as io]
    [pbnj.paths :as path]))
 
+(def root-path #path "welcome#index")
+
 (deftest locate-test
   (let [expected (io/file "test/resources/welcome/index.html")
-        actual (-> #path "welcome#index"
+        actual (-> root-path
                    (path/locate :parents #{"test/resources"} :formats #{:html})
                    first)]
     (is (= expected actual))))
@@ -19,32 +21,30 @@
       (let [file (path/path->file #pbnj/path "test/resources/welcome#index" ".html")]
         (is (= expected file))))
     (testing "parent, path and extension"
-      (let [file (path/path->file "test/resources" #pbnj/path "welcome#index" "html")]
+      (let [file (path/path->file "test/resources" root-path "html")]
         (is (= expected file))))))
 
 (deftest exists?-test
   (testing "path exists"
     (is (path/exists? #path "test/resources/welcome#index" "html"))
-    (is (path/exists? "test/resources" #path "welcome#index" "html")))
+    (is (path/exists? "test/resources" root-path "html")))
   (testing "path doesn't exist"
     (is (not (path/exists? #path "test/resources/welcome#index" "php")))
-    (is (not (path/exists? "test/resources" #pbnj/path "welcome#index" "php")))))
+    (is (not (path/exists? "test/resources" root-path "php")))))
 
 (deftest path-test
-  (is (= (path/path "welcome" "index") #path "welcome#index"))
+  (is (= (path/path "welcome" "index") root-path))
   (let [metadata {:doc "Hey"}]
     (is (= metadata (meta (path/path "welcome" "index" metadata))))))
 
 (deftest with-ext-test
-  (let [root #path "welcome#index"]
-    (is (= "html" (path/path-ext (path/with-ext root "html"))))))
+  (let [ext "html"]
+    (is (= ext (path/path-ext (path/with-ext root-path ext))))))
 
 (deftest with-formats-test
-  (let [root #path "welcome#index"
-        formats #{:html :json}]
-    (is (= formats (path/path-formats (path/with-formats root formats))))))
+  (let [formats #{:html :json}]
+    (is (= formats (path/path-formats (path/with-formats root-path formats))))))
 
 (deftest with-parents-test
-  (let [root #path "welcome#index"
-        parents #{"test/resources"}]
-    (is (= parents (path/path-parents (path/with-parents root parents))))))
+  (let [parents #{"test/resources"}]
+    (is (= parents (path/path-parents (path/with-parents root-path parents))))))
