@@ -2,43 +2,70 @@
   (:require [clojure.java.io :as io]
             [clojure.string :as str]))
 
-(deftype Path [namespace name metadata]
+(deftype Path [ns name metadata]
   clojure.lang.Named
   (getName [this] (.name this))
-  (getNamespace [this] (.namespace this))
+  (getNamespace [this] (.ns this))
 
   clojure.lang.IObj
   (meta [this] (.metadata this))
   (withMeta [this meta]
     (if (= meta (.metadata this))
       this
-      (->Path (.namespace this) (.name this) meta)))
+      (Path. (.ns this) (.name this) meta)))
 
   Comparable
   (compareTo [this other]
     (if (.equals this other)
       0
-      (let [nsc (.compareTo (.namespace this) (.namespace other))]
+      (let [nsc (.compareTo (.ns this) (.ns other))]
         (if (not= 0 nsc)
           nsc
           (.compareTo (.name this) (.name other))))))
 
   Object
   (toString [this]
-    (str (.namespace this) "#" (.name this)))
+    (str (.ns this) "#" (.name this)))
   (equals [this other]
     (and
-     (= (.namespace this) (.namespace other))
+     (= (.ns this) (.ns other))
      (= (.name this) (.name other))))
   (hashCode [this]
     (hash-combine
-     (hash (.namespace this))
+     (hash (.ns this))
      (hash (.name this)))))
 
+(defn path
+  "Return a path with a namespace and a name and optional metadata map."
+  ([ns name] (->Path ns name {}))
+  ([ns name meta] (->Path ns name meta)))
+
 (defn str->path
+  "Parse a path from a string with the format 'namespace#name'."
   [str]
   (let [[ns name] (str/split str #"#")]
-    (->Path ns name {})))
+    (path ns name)))
+
+(def path-reader str->path)
+
+(defn- meta-reader
+  [key]
+  (fn [path]
+    (-> path meta key)))
+
+(defn- meta-writer
+  [key]
+  (fn [path value]
+    (with-meta path (assoc (meta path) key value))))
+
+(def with-ext (meta-writer ::ext))
+(def path-ext (meta-reader ::ext))
+
+(def with-parents (meta-writer ::parents))
+(def path-parents (meta-reader ::parents))
+
+(def with-formats (meta-writer ::parents))
+(def path-formats (meta-reader ::formats))
 
 (comment
   (name (->Path "welcome" "index" {}))
@@ -54,30 +81,10 @@
   (str (str->path "welcome#index"))
 )
 
-(def path-reader str->path)
-
 (defn path?
   "Return true if the value is a path, otherwise return false."
   [p]
   (instance? Path p))
-
-(defn- with-ext
-  [file ext]
-  (let [ext
-        (if (str/starts-with? ext ".")
-          (.substring ext 1)
-          ext)]
-    (str file "." ext)))
-
-(comment
-  (with-ext "welcome" "html")
-  (with-ext "welcome" ".html")
-  )
-
-(defn path->fs-path
-  "Convert a path into a file system path"
-  ([path] (str (namespace path) "/" (name path)))
-  ([path ext] (with-ext (path->fs-path path) ext)))
 
 (defn path->symbol
   "Convert a path into a symbol"
@@ -87,6 +94,27 @@
 
 (def ^{:doc "Convert a path into a var"}
   path->var (comp find-var path->symbol))
+
+(defn- join-ext
+  [file ext]
+  (let [ext
+        (if (str/starts-with? ext ".")
+          (.substring ext 1)
+          ext)]
+    (str file "." ext)))
+
+(comment
+  (join-ext "welcome" "html")
+  (join-ext "welcome" ".html")
+  )
+
+(defn path->fs-path
+  "Convert a path into a file system path"
+  ([path]
+   (let [base (str (namespace path) "/" (name path))
+         ext  (path-ext path)]
+     (if ext (join-ext base ext) base)))
+  ([path ext] (path->fs-path (with-ext path ext))))
 
 (comment
   (path->fs-path (str->path "welcome#index"))
@@ -103,8 +131,8 @@
    (io/file parent (path->fs-path path ext))))
 
 (defn exists?
-  ([parent ext]
-   (.exists (path->file parent ext)))
+  ([path ext]
+   (.exists (path->file path ext)))
   ([parent path ext]
    (.exists (path->file parent path ext))))
 
@@ -117,7 +145,9 @@
      (path->file parent path ext))))
 
 (defn locate
-  [path & {:keys [parents formats]}]
+  [path & {:keys [parents formats]
+           :or {parents (path-parents path)
+                formats (path-formats path)}}]
   (->>
    formats
    (mapcat

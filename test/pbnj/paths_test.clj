@@ -29,3 +29,12 @@
   (testing "path doesn't exist"
     (is (not (path/exists? #path "test/resources/welcome#index" "php")))
     (is (not (path/exists? "test/resources" #pbnj/path "welcome#index" "php")))))
+
+(deftest path-test
+  (is (= (path/path "welcome" "index") #path "welcome#index"))
+  (let [metadata {:doc "Hey"}]
+    (is (= metadata (meta (path/path "welcome" "index" metadata))))))
+
+(deftest with-ext-test
+  (let [root #path "welcome#index"]
+    (is (= "html" (path/path-ext (path/with-ext root "html"))))))
