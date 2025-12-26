@@ -56,7 +56,9 @@
 
 (def path-reader str->path)
 
-(defn path? [p]
+(defn path?
+  "Return true if the value is a path, otherwise return false."
+  [p]
   (instance? Path p))
 
 (defn- with-ext
@@ -83,7 +85,8 @@
   (let [ns (str/replace (namespace path) #"/" ".")]
     (symbol ns (name path))))
 
-(def path->var (comp find-var path->symbol))
+(def ^{:doc "Convert a path into a var"}
+  path->var (comp find-var path->symbol))
 
 (comment
   (path->fs-path (str->path "welcome#index"))
