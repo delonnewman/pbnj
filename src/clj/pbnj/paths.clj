@@ -2,18 +2,34 @@
   (:require [clojure.java.io :as io]
             [clojure.string :as str]))
 
-(deftype Path [namespace name]
+(deftype Path [namespace name metadata]
   clojure.lang.Named
   (getName [this] (.name this))
   (getNamespace [this] (.namespace this))
 
+  clojure.lang.IObj
+  (meta [this] (.metadata this))
+  (withMeta [this meta]
+    (if (= meta (.metadata this))
+      this
+      (->Path (.namespace this) (.name this) meta)))
+
+  Comparable
+  (compareTo [this other]
+    (if (.equals this other)
+      0
+      (let [nsc (.compareTo (.namespace this) (.namespace other))]
+        (if (not= 0 nsc)
+          nsc
+          (.compareTo (.name this) (.name other))))))
+
   Object
-  (toString [this] (str "#path \"" (.namespace this) "#" (.name this) "\""))
+  (toString [this]
+    (str (.namespace this) "#" (.name this)))
   (equals [this other]
     (and
      (= (.namespace this) (.namespace other))
-     (= (.name this) (.name other))))
-  )
+     (= (.name this) (.name other)))))
 
 (defn path->str
   [path]
@@ -22,13 +38,21 @@
 (defn str->path
   [str]
   (let [[ns name] (str/split str #"#")]
-    (->Path ns name)))
+    (->Path ns name {})))
 
 (comment
-  (name (->Path "welcome" "index"))
-  (namespace (->Path "welcome" "index"))
-  (path->str (->Path "welcome" "index"))
+  (name (->Path "welcome" "index" {}))
+  (namespace (->Path "welcome" "index" {}))
+  (meta (->Path "welcome" "index" {}))
+
+  (path->str (->Path "welcome" "index" {}))
   (path->str (str->path "welcome#index"))
+
+  (meta (str->path "welcome#index"))
+  (with-meta (str->path "welcome#index") {:doc "Hey"})
+  (meta ^{:doc "Hey"} #path "welcome#index")
+
+  (compare #path "entities#create" #path "entities#new")
 )
 
 (def path-reader str->path)
