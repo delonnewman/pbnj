@@ -39,12 +39,12 @@
 
 (deftest with-ext-test
   (let [ext "html"]
-    (is (= ext (path/path-ext (path/with-ext root-path ext))))))
+    (is (= ext (-> root-path (path/with-ext ext) path/path-ext)))))
 
 (deftest with-formats-test
   (let [formats #{:html :json}]
-    (is (= formats (path/path-formats (path/with-formats root-path formats))))))
+    (is (= formats (-> root-path (path/with-formats formats) path/path-formats)))))
 
 (deftest with-parents-test
   (let [parents #{"test/resources"}]
-    (is (= parents (path/path-parents (path/with-parents root-path parents))))))
+    (is (= parents (-> root-path (path/with-parents parents) path/path-parents)))))
