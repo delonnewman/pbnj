@@ -29,11 +29,11 @@
   (equals [this other]
     (and
      (= (.namespace this) (.namespace other))
-     (= (.name this) (.name other)))))
-
-(defn path->str
-  [path]
-  (str (namespace path) "#" (name path)))
+     (= (.name this) (.name other))))
+  (hashCode [this]
+    (hash-combine
+     (hash (.namespace this))
+     (hash (.name this)))))
 
 (defn str->path
   [str]
@@ -45,14 +45,13 @@
   (namespace (->Path "welcome" "index" {}))
   (meta (->Path "welcome" "index" {}))
 
-  (path->str (->Path "welcome" "index" {}))
-  (path->str (str->path "welcome#index"))
-
   (meta (str->path "welcome#index"))
   (with-meta (str->path "welcome#index") {:doc "Hey"})
   (meta ^{:doc "Hey"} #path "welcome#index")
 
   (compare #path "entities#create" #path "entities#new")
+  (str (->Path "welcome" "index" {}))
+  (str (str->path "welcome#index"))
 )
 
 (def path-reader str->path)
@@ -89,7 +88,7 @@
 (comment
   (path->fs-path (str->path "welcome#index"))
   (path->fs-path (str->path "welcome#index") "html")
-  #pbnj/path "welcome#index"
+  #path "welcome#index"
   (path->symbol #path "pbnj/paths#str->path")
   (path->var #path "pbnj/paths#str->path")
   )
