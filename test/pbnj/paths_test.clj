@@ -6,6 +6,25 @@
 
 (def root-path #path "welcome#index")
 
+(deftest path-test
+  (let [metadata {:doc "Hey"}
+        path (path/path "welcome" "index")]
+    (is (= path root-path))
+    (is (= {} (meta path))
+    (is (= metadata (meta (path/path "welcome" "index" metadata)))))))
+
+(deftest with-ext-test
+  (let [ext "html"]
+    (is (= ext (-> root-path (path/with-ext ext) path/path-ext)))))
+
+(deftest with-formats-test
+  (let [formats #{:html :json}]
+    (is (= formats (-> root-path (path/with-formats formats) path/path-formats)))))
+
+(deftest with-parents-test
+  (let [parents #{"test/resources"}]
+    (is (= parents (-> root-path (path/with-parents parents) path/path-parents)))))
+
 (deftest locate-test
   (let [expected (io/file "test/resources/welcome/index.html")
         actual (-> root-path
@@ -32,19 +51,3 @@
     (is (not (path/exists? #path "test/resources/welcome#index" "php")))
     (is (not (path/exists? "test/resources" root-path "php")))))
 
-(deftest path-test
-  (is (= (path/path "welcome" "index") root-path))
-  (let [metadata {:doc "Hey"}]
-    (is (= metadata (meta (path/path "welcome" "index" metadata))))))
-
-(deftest with-ext-test
-  (let [ext "html"]
-    (is (= ext (-> root-path (path/with-ext ext) path/path-ext)))))
-
-(deftest with-formats-test
-  (let [formats #{:html :json}]
-    (is (= formats (-> root-path (path/with-formats formats) path/path-formats)))))
-
-(deftest with-parents-test
-  (let [parents #{"test/resources"}]
-    (is (= parents (-> root-path (path/with-parents parents) path/path-parents)))))
