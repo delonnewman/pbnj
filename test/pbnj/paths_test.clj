@@ -25,13 +25,6 @@
   (let [parents #{"test/resources"}]
     (is (= parents (-> root-path (path/with-parents parents) path/path-parents)))))
 
-(deftest locate-test
-  (let [expected (io/file "test/resources/welcome/index.html")
-        actual (-> root-path
-                   (path/locate :parents #{"test/resources"} :formats #{:html})
-                   first)]
-    (is (= expected actual))))
-
 (deftest path->file-test
   (let [expected (io/file "test/resources/welcome/index.html")
         base     #path "test/resources/welcome#index"]
@@ -65,3 +58,9 @@
     (is (nil? (path/fetch #path "test/resources/welcome#index" "php")))
     (is (nil? (path/fetch "test/resources" root-path "php")))))
 
+(deftest locate-test
+  (let [expected (io/file "test/resources/welcome/index.html")
+        actual (-> root-path
+                   (path/locate :parents #{"test/resources"} :formats #{:html})
+                   first)]
+    (is (= expected actual))))
