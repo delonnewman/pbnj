@@ -40,6 +40,11 @@
   ([ns name] (->Path ns name {}))
   ([ns name meta] (->Path ns name meta)))
 
+(defn path?
+  "Return true if the value is a path, otherwise return false."
+  [p]
+  (instance? Path p))
+
 (defn str->path
   "Parse a path from a string with the format 'namespace#name'."
   [str]
@@ -80,11 +85,6 @@
   (str (->Path "welcome" "index" {}))
   (str (str->path "welcome#index"))
 )
-
-(defn path?
-  "Return true if the value is a path, otherwise return false."
-  [p]
-  (instance? Path p))
 
 (defn path->symbol
   "Convert a path into a symbol"
