@@ -133,6 +133,8 @@
    (io/file parent (path->fs-path path ext))))
 
 (defn exists?
+  ([path]
+   (.exists (path->file path)))
   ([path ext]
    (.exists (path->file path ext)))
   ([parent path ext]

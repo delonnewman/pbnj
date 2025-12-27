@@ -47,9 +47,11 @@
 
 (deftest exists?-test
   (testing "path exists"
+    (is (path/exists? (path/with-ext #path "test/resources/welcome#index" "html")))
     (is (path/exists? #path "test/resources/welcome#index" "html"))
     (is (path/exists? "test/resources" root-path "html")))
   (testing "path doesn't exist"
+    (is (not (path/exists? (path/with-ext #path "test/resources/welcome#index" "php"))))
     (is (not (path/exists? #path "test/resources/welcome#index" "php")))
     (is (not (path/exists? "test/resources" root-path "php")))))
 
