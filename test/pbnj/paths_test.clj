@@ -33,12 +33,14 @@
     (is (= expected actual))))
 
 (deftest path->file-test
-  (let [expected (io/file "test/resources/welcome/index.html")]
+  (let [expected (io/file "test/resources/welcome/index.html")
+        base     #path "test/resources/welcome#index"]
+    (testing "path only"
+      (is (= expected (path/path->file (path/with-ext base "html")))))
     (testing "path and extension"
-      (is (= expected (path/path->file #path "test/resources/welcome#index" "html"))))
+      (is (= expected (path/path->file base "html"))))
     (testing "path and extension with a leading dot"
-      (let [file (path/path->file #pbnj/path "test/resources/welcome#index" ".html")]
-        (is (= expected file))))
+      (is (= expected (path/path->file base ".html"))))
     (testing "parent, path and extension"
       (let [file (path/path->file "test/resources" root-path "html")]
         (is (= expected file))))))

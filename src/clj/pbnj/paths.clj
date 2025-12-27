@@ -125,6 +125,8 @@
   )
 
 (defn path->file
+  ([path]
+   (io/file (path->fs-path path)))
   ([path ext]
    (io/file (path->fs-path path ext)))
   ([parent path ext]
