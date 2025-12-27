@@ -141,6 +141,9 @@
    (.exists (path->file parent path ext))))
 
 (defn fetch
+  ([path]
+   (when (exists? path)
+     (path->file path)))
   ([path ext]
    (when (exists? path ext)
      (path->file path ext)))

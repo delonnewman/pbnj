@@ -55,3 +55,13 @@
     (is (not (path/exists? #path "test/resources/welcome#index" "php")))
     (is (not (path/exists? "test/resources" root-path "php")))))
 
+(deftest fetch-test
+  (testing "path exists"
+    (is (path/fetch (path/with-ext #path "test/resources/welcome#index" "html")))
+    (is (path/fetch #path "test/resources/welcome#index" "html"))
+    (is (path/fetch "test/resources" root-path "html")))
+  (testing "path doesn't exist"
+    (is (nil? (path/fetch (path/with-ext #path "test/resources/welcome#index" "php"))))
+    (is (nil? (path/fetch #path "test/resources/welcome#index" "php")))
+    (is (nil? (path/fetch "test/resources" root-path "php")))))
+
