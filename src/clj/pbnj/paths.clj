@@ -164,12 +164,3 @@
          (path->file parent path (name format))) parents)))
    (filter java.io.File/.exists)))
 
-(comment
-  (fetch #pbnj/path "test/resources/welcome#index" "html")
-  (fetch #pbnj/path "test/resources/welcome#index" "php")
-  (fetch "test/resources" #pbnj/path "welcome#index" "html")
-
-  (locate #path "welcome#index" :parents #{"test/resources"} :formats #{:html :php :js})
-
-  (= #path "welcome#index" #path "welcome#index")
-  )
