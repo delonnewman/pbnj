@@ -136,7 +136,7 @@ Site Map +-> Route Tree +-> sitemap.xml
                         +-> directory / pages
 #+end_example
 
-* Runtime
+* Asset Pipline
 ** JavaScript
 https://clojurescript.org
 
