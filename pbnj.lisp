@@ -21,7 +21,7 @@
 (defun action (namespace name &optional meta)
   (if meta
     (make-action :namespace namespace :name name :meta meta
-    (make-action :namespace namespace :name name)))
+    (make-action :namespace namespace :name name))))
 
 (defun action= (one another)
   (and
