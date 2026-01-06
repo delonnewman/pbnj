@@ -102,9 +102,10 @@ Indicated with the #pbnj/path reader macro, paths are resolved by the system by 
 #+begin_example
 target/
  - config/
-   - database.php
-   - secrets.php
+   - database.yaml
+   - secrets.yaml
  - public/
+  - index.php?key=Forest::EntitiesController::show&entity_id=1&format=json
   - .htaccess # handles url writing e.g. translating "/entities/1.json" to "/entities/index.php?entity_id=1&format=json"
   - index.html
   - sitemap.xml
@@ -116,16 +117,6 @@ target/
     - site.js
     - site.js.map
    - images/
-  - _layouts/
-   - default.php
-  - entities/ # directory structure of PHP, HTML or both
-   - index.php
-   - _list.php 
-   - _create.php
-   - _show.php
-   - _update.php
-   - add/index.php
-   - edit/index.php
  ...
 #+end_example
 
@@ -139,13 +130,19 @@ Site Map +-> Route Tree +-> sitemap.xml
 * Asset Pipline
 ** JavaScript
 https://clojurescript.org
+https://docs.racket-lang.org/ecmascript/index.html
+https://docs.racket-lang.org/racketscript/index.html
 
 ** PHP
 https://github.com/phel-lang/phel-lang
 https://github.com/rodnaph/clj-php
 https://github.com/john-shaffer/php-clj
 https://github.com/jphp-group/jphp
+
 https://symfony.com
+https://github.com/symfony/yaml
+https://github.com/symfony/http-foundation
+https://github.com/symfony/security-csrf
 
 ** HTML
 https://github.com/omcljs/om/blob/master/src/main/om/dom.cljc
@@ -158,3 +155,13 @@ https://github.com/jramosg/color-tools
 * CMS
 https://keystatic.com
 https://jekyllrb.com
+
+* Runtime
+- Simple key/value store
+  - Globally namespaced functions, maps, sequences, and scalars (references, numbers, strings, symbols, ext)
+- Action/resource specifiers provide a level of indirection
+  - Can specify a static file, compiled asset or stored resource (function, map, seq, scalar)
+
+* Meta Language (WonderScript)
+- JavaScript without the warts
+
