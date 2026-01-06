@@ -1,6 +1,6 @@
 (ns pbnj.routing
   (:refer-clojure :exclude [get])
-  (:require [pbnj.paths :as path :refer [->Path]]
+  (:require [pbnj.paths :as path :refer [path]]
             [clojure.string :as str]))
 
 (defn route
@@ -45,26 +45,26 @@
    (let [plural (name key) singular plural]
      (routes
       (get (str "/" plural)
-           :to (->Path plural "list")
+           :to (path plural "list")
            :name plural)
       (get (str "/" plural "/new")
-           :to (->Path plural "new")
+           :to (path plural "new")
            :name (str "new_" singular))
       (post (str "/" plural)
-            :to (->Path plural "create")
+            :to (path plural "create")
             :name plural)
       (get (str "/" plural "/:id")
-           :to (->Path plural "show")
+           :to (path plural "show")
            :name (str "new_" singular))
       (get (str "/" plural "/:id/edit")
-           :to (->Path plural "edit")
+           :to (path plural "edit")
            :name (str "edit_" singular))
       (route (str "/" plural "/:id")
-             :to (->Path plural "edit")
+             :to (path plural "edit")
              :name (str "update_" singular)
              :via #{:post :put})
       (delete (str "/" plural "/:id")
-              :to (->Path plural "remove")
+              :to (path plural "remove")
               :name (str "delete_" singular)))))
    ([key & keys]
     (routes
