@@ -1,6 +1,7 @@
 {
     "require": {
         "phel-lang/phel-lang": "^0.27.0",
-        "symfony/http-foundation": "^8.0"
+        "symfony/http-foundation": "^8.0",
+        "yaml/yamlscript": "^0.2.8"
     }
 }
