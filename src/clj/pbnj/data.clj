@@ -16,7 +16,7 @@
     (get @(.methods this) msg))
 
   clojure.lang.Named
-  (getNamespace [this] nil)
+  (getNamespace [_] nil)
   (getName [this]
     @(.name this))
 
