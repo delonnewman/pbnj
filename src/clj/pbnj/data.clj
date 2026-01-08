@@ -7,7 +7,7 @@
   (find-method [this msg]
     "Return the method that corresponds to the message or nil"))
 
-(def send nil)
+(def send-message nil)
 
 (deftype Head
   [id name version methods attributes]
@@ -30,29 +30,8 @@
     (= (.id this) (.id other)))
 
   clojure.lang.IFn
-  (applyTo [this args] (apply send this args))
-  (invoke [this msg] (send this msg))
-  (invoke [this msg a] (send this msg a))
-  (invoke [this msg a b] (send this msg a b))
-  (invoke [this msg a b c] (send this msg a b c))
-  (invoke [this msg a b c d] (send this msg a b c d))
-  (invoke [this msg a b c d e] (send this msg a b c d e))
-  (invoke [this msg a b c d e f] (send this msg a b c d e f))
-  (invoke [this msg a b c d e f g] (send this msg a b c d e f g))
-  (invoke [this msg a b c d e f g h] (send this msg a b c d e f g h))
-  (invoke [this msg a b c d e f g h i] (send this msg a b c d e f g h i))
-  (invoke [this msg a b c d e f g h i j] (send this msg a b c d e f g h i j))
-  (invoke [this msg a b c d e f g h i j k] (send this msg a b c d e f g h i j k))
-  (invoke [this msg a b c d e f g h i j k l] (send this msg a b c d e f g h i j k l))
-  (invoke [this msg a b c d e f g h i j k l m] (send this msg a b c d e f g h i j k l m))
-  (invoke [this msg a b c d e f g h i j k l m n] (send this msg a b c d e f g h i j k l m n))
-  (invoke [this msg a b c d e f g h i j k l m n o] (send this msg a b c d e f g h i j k l m n o))
-  (invoke [this msg a b c d e f g h i j k l m n o p] (send this msg a b c d e f g h i j k l m n o p))
-  (invoke [this msg a b c d e f g h i j k l m n o p q] (send this msg a b c d e f g h i j k l m n o p q))
-  (invoke [this msg a b c d e f g h i j k l m n o p q r] (send this msg a b c d e f g h i j k l m n o p q r))
-  (invoke [this msg a b c d e f g h i j k l m n o p q r s] (send this msg a b c d e f g h i j k l m n o p q r s))
-  (invoke [this msg a b c d e f g h i j k l m n o p q r s rest] (send this msg a b c d e f g h i j k l m n o p q r s rest)))
-
+  (applyTo [this args] (apply send-message this args))
+  (invoke [this msg] (send-message this msg)))
 
 (defn head
   [& {:keys [id name version methods attributes]
@@ -79,13 +58,34 @@
 (defn method? [obj msg]
   (fn? (find-method obj msg)))
 
-(defn send [obj msg & args]
-  (let [method (find-method obj msg)]
+(defn message-name [msg]
+  (cond (keyword? msg) msg
+        (vector? msg) (msg 0)
+        (list? msg) (let [tag (first msg)]
+                      (if (symbol? tag)
+                        (keyword (name tag))
+                        tag))
+        :else (throw (ex-info (str "Invalid message: " (pr-str msg)) {:msg msg}))))
+
+(defn message-args [msg]
+  (cond (keyword? msg) '()
+        (vector? msg) (subvec msg 1)
+        (list? msg) (rest msg)
+        :else (throw (ex-info (str "Invalid message: " (pr-str msg)) {:msg msg}))))
+
+(defn send-message [obj msg]
+  (let [name   (message-name msg)
+        args   (message-args msg)
+        method (find-method obj name)]
     (if (and method (fn? method))
       (apply method obj args)
       (if (method? obj :doesnt-understand)
-        (send obj :doesnt-understand msg args)
+        (send-message obj [:doesnt-understand msg args])
         (throw (ex-info (str "Method " msg " not found") {:obj obj :msg msg}))))))
+
+
+(defmacro send [obj msg]
+  `(send-message ~obj (quote ~msg)))
 
 (defn clone [^Head obj]
   (head :version (.version obj) :name @(.name obj)
@@ -126,13 +126,16 @@
 (add-method! basis :attributes
   (fn attributes [^Head this] @(.attributes this)))
 
+(add-method! basis :get
+  (fn attributes [^Head this name] (get @(.attributes this) name)))
+
 (defmethod basis :set!
   [^Head this key value]
   (swap! (.attributes this) assoc key value)
   this)
 
 (add-method! basis :clone clone)
-(add-method! basis :send send)
+(add-method! basis :send send-message)
 (add-method! basis :understands? method?)
 
 (add-method! basis :messages
@@ -153,23 +156,21 @@
 
 (defmethod root :add-ref
   [^Head this name]
-  (swap! (.attributes this)
-         assoc name (head :name name :version (.version this)))
+  (this [:set! name (head :name name :version (.version this))])
   this)
 
-(defmethod root :get-ref
-  [^Head this name]
-  (get @(.attributes this) name))
-
 (comment
-  (root :get-ref "welcome/index")
-  (root :add-ref "welcome/index")
-  (name (root :get-ref "welcome/index"))
-  (name (root :name= "root"))
-  (name (root :get-ref "welcome/index"))
+  (root [:get "welcome/index"])
+  (root [:add-ref "welcome/index"])
+  (send root (add-ref "welcome/index"))
+  (name (root [:get "welcome/index"]))
+  (name (send root (get "welcome/index")))
+  (name (root [:name= "root"]))
+  (name (root [:get "welcome/index"]))
   (basis :messages)
   (root :messages)
   (basis :clone)
-  (basis :understands? :clone)
-  (basis :understands? :cloning)
+  (basis [:understands? :clone])
+  (send basis (understands? :clone))
+  (basis [:understands? :cloning])
   )
