@@ -89,8 +89,11 @@
 (defmacro send [obj msg]
   `(send-message ~obj (quote ~msg)))
 
-(defn clone [^Head obj]
-  (head :version (.version obj) :name @(.name obj)
+(defn clone [^Head obj & {:keys [name version]
+                          :or {name @(.name obj)
+                               version (.version obj)}}]
+  (head :version version
+        :name name
         :methods (atom @(.methods obj) :validator map?)
         :attributes (atom @(.attributes obj) :validator map?)))
 
@@ -158,7 +161,7 @@
 
 (defmethod root :<<
   [^Head this name]
-  (this [:set! name (head :name name :version (.version this))])
+  (this [:set! name (basis [:clone :name name :version (.version this)])])
   this)
 
 (comment
@@ -172,7 +175,7 @@
   (basis :messages)
   (send basis messages)
   (root :messages)
-  (basis :clone)
+  (basis [:clone :name "Hey"])
   (basis :id)
   (basis [:understands? :clone])
   (send basis (understands? :clone))
