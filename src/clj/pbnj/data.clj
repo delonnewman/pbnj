@@ -83,8 +83,8 @@
   (let [method (find-method obj msg)]
     (if (and method (fn? method))
       (apply method obj args)
-      (if (method? obj :method-not-found)
-        (send obj :method-not-found msg args)
+      (if (method? obj :doesnt-understand)
+        (send obj :doesnt-understand msg args)
         (throw (ex-info (str "Method " msg " not found") {:obj obj :msg msg}))))))
 
 (defn clone [^Head obj]
@@ -132,6 +132,8 @@
   this)
 
 (add-method! basis :clone clone)
+(add-method! basis :send send)
+(add-method! basis :understands? method?)
 
 (add-method! basis :messages
   (fn messages [^Head this] (keys @(.methods this))))
@@ -168,4 +170,6 @@
   (basis :messages)
   (root :messages)
   (basis :clone)
+  (basis :understands? :clone)
+  (basis :understands? :cloning)
   )
