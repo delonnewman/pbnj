@@ -60,6 +60,7 @@
 
 (defn message-name [msg]
   (cond (keyword? msg) msg
+        (symbol? msg) (keyword (name msg))
         (vector? msg) (msg 0)
         (list? msg) (let [tag (first msg)]
                       (if (symbol? tag)
@@ -69,6 +70,7 @@
 
 (defn message-args [msg]
   (cond (keyword? msg) '()
+        (symbol? msg) '()
         (vector? msg) (subvec msg 1)
         (list? msg) (rest msg)
         :else (throw (ex-info (str "Invalid message: " (pr-str msg)) {:msg msg}))))
@@ -142,7 +144,7 @@
   (fn messages [^Head this] (keys @(.methods this))))
 
 (add-method! basis :id
-  (fn name [^Head this] @(.id this)))
+  (fn name [^Head this] (.id this)))
 
 (add-method! basis :name
   (fn name [^Head this] @(.name this)))
@@ -154,22 +156,24 @@
 
 (def root (basis :clone))
 
-(defmethod root :add-ref
+(defmethod root :<<
   [^Head this name]
   (this [:set! name (head :name name :version (.version this))])
   this)
 
 (comment
   (root [:get "welcome/index"])
-  (root [:add-ref "welcome/index"])
-  (send root (add-ref "welcome/index"))
+  (root [:<< "welcome/index"])
+  (send root (<< "welcome/index"))
   (name (root [:get "welcome/index"]))
   (name (send root (get "welcome/index")))
   (name (root [:name= "root"]))
   (name (root [:get "welcome/index"]))
   (basis :messages)
+  (send basis messages)
   (root :messages)
   (basis :clone)
+  (basis :id)
   (basis [:understands? :clone])
   (send basis (understands? :clone))
   (basis [:understands? :cloning])
