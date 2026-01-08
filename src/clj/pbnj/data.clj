@@ -4,7 +4,8 @@
 (set! *warn-on-reflection* true)
 
 (defprotocol Obj
-  (find-method [this msg] "Return the method that corresponds to the message or nil"))
+  (find-method [this msg]
+    "Return the method that corresponds to the message or nil"))
 
 (def send nil)
 
@@ -99,16 +100,16 @@
   node)
 
 (comment
-(find-method (head :methods (atom {:hi (fn [& _] "Hi")})) :hi)
-(method? (head :methods (atom {:hi (fn [& _] "Hi")})) :hi)
-(send (head :methods (atom {:hi (fn [& _] "Hi")})) :hi)
-(find-method (head :methods (atom {:hi (fn [& _] "Hi")})) :bye)
-(method? (head :methods (atom {:hi (fn [& _] "Hi")})) :bye)
-(send (head :methods (atom {:hi (fn [& _] "Hi")})) :bye)
-(.invoke (head :methods (atom {:hi (fn [& _] "Hi")})) :hi)
-(.invoke (head :methods (atom {:echo (fn [& args] args)})) :echo '(1 2 3))
-(:echo (head (atom {:echo (fn [& args] args)})) (+ 4 5))
-(set-name! (head :methods (atom {:hi (fn [& _] "Hi")})) "greeter")
+  (find-method (head :methods (atom {:hi (fn [& _] "Hi")})) :hi)
+  (method? (head :methods (atom {:hi (fn [& _] "Hi")})) :hi)
+  (send (head :methods (atom {:hi (fn [& _] "Hi")})) :hi)
+  (find-method (head :methods (atom {:hi (fn [& _] "Hi")})) :bye)
+  (method? (head :methods (atom {:hi (fn [& _] "Hi")})) :bye)
+  (send (head :methods (atom {:hi (fn [& _] "Hi")})) :bye)
+  (.invoke (head :methods (atom {:hi (fn [& _] "Hi")})) :hi)
+  (.invoke (head :methods (atom {:echo (fn [& args] args)})) :echo '(1 2 3))
+  (:echo (head (atom {:echo (fn [& args] args)})) (+ 4 5))
+  (set-name! (head :methods (atom {:hi (fn [& _] "Hi")})) "greeter")
   )
 
 (add-method! root :add-ref
@@ -120,11 +121,10 @@
   (fn get-ref [^Head obj name]
     (get @(.attributes obj) name)))
 
-(add-method! root :echo
-  (fn echo [& args] args))
-
-(root :get-ref "welcome/index")
-(root :add-ref "welcome/index")
-(name (root :get-ref "welcome/index"))
-(name (root :name= "root"))
-(name (root :get-ref "welcome/index"))
+(comment
+  (root :get-ref "welcome/index")
+  (root :add-ref "welcome/index")
+  (name (root :get-ref "welcome/index"))
+  (name (root :name= "root"))
+  (name (root :get-ref "welcome/index"))
+  )
