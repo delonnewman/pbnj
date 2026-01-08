@@ -1,5 +1,5 @@
 (ns pbnj.data
-  (:refer-clojure :exclude [send]))
+  (:refer-clojure :exclude [send defmethod]))
 
 (set! *warn-on-reflection* true)
 
@@ -53,19 +53,12 @@
   (invoke [this msg a b c d e f g h i j k l m n o p q r s rest] (send this msg a b c d e f g h i j k l m n o p q r s rest)))
 
 
-(def basic-methods (atom {} :validator map?))
-(swap! basic-methods assoc :version (fn [^Head obj] (.version obj)))
-(swap! basic-methods assoc :name=
-  (fn [^Head obj name]
-    (reset! (.name obj) name)
-    obj))
-
 (defn head
   [& {:keys [id name version methods attributes]
       :or {id (random-uuid)
            name nil
            version 0
-           methods (atom @basic-methods :validator map?)
+           methods (atom {} :validator map?)
            attributes (atom {} :validator map?)}}]
   (->Head
    id
@@ -93,11 +86,18 @@
         (send obj :method-not-found msg args)
         (throw (ex-info (str "Method " msg " not found") {:obj obj :msg msg}))))))
 
-(def root (head :name "root"))
-
 (defn add-method! [^Head node msg f]
   (swap! (.methods node) assoc msg f)
   node)
+
+(defmacro defmethod [obj msg binds & body]
+  (let [name (symbol (name msg))]
+    `(add-method! ~obj ~msg (fn ~name ~binds ~@body))))
+
+(comment
+  (macroexpand '(method greet [name] (str "Hi " name)))
+  (macroexpand '(defmethod root :greet [self name] (str "Hi " name)))
+  )
 
 (comment
   (find-method (head :methods (atom {:hi (fn [& _] "Hi")})) :hi)
@@ -112,14 +112,27 @@
   (set-name! (head :methods (atom {:hi (fn [& _] "Hi")})) "greeter")
   )
 
-(add-method! root :add-ref
-  (fn add-ref [^Head obj name]
-    (swap! (.attributes obj) assoc name (head :name name :version (:version root)))
-    obj))
+(def basis (head))
 
-(add-method! root :get-ref
-  (fn get-ref [^Head obj name]
-    (get @(.attributes obj) name)))
+(defmethod basis :version
+  [^Head this] (.version this))
+
+(defmethod basis :name=
+  [^Head this name]
+  (reset! (.name this) name)
+  this)
+
+(def root (head :methods (atom @(.methods basis) :validator map?)))
+
+(defmethod root :add-ref
+  [^Head this name]
+  (swap! (.attributes this)
+         assoc name (head :name name :version (.version this)))
+  this)
+
+(defmethod basis :get-ref
+  [this name]
+  (get @(.attributes this) name))
 
 (comment
   (root :get-ref "welcome/index")
