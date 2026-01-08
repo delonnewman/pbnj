@@ -30,6 +30,7 @@
     (= (.id this) (.id other)))
 
   clojure.lang.IFn
+  (applyTo [this args] (apply send this args))
   (invoke [this msg] (send this msg))
   (invoke [this msg a] (send this msg a))
   (invoke [this msg a b] (send this msg a b))
@@ -86,6 +87,11 @@
         (send obj :method-not-found msg args)
         (throw (ex-info (str "Method " msg " not found") {:obj obj :msg msg}))))))
 
+(defn clone [^Head obj]
+  (head :version (.version obj) :name @(.name obj)
+        :methods (atom @(.methods obj) :validator map?)
+        :attributes (atom @(.attributes obj) :validator map?)))
+
 (defn add-method! [^Head node msg f]
   (swap! (.methods node) assoc msg f)
   node)
@@ -114,15 +120,34 @@
 
 (def basis (head))
 
-(defmethod basis :version
-  [^Head this] (.version this))
+(add-method! basis :version
+  (fn version [^Head this] (.version this)))
+
+(add-method! basis :attributes
+  (fn attributes [^Head this] @(.attributes this)))
+
+(defmethod basis :set!
+  [^Head this key value]
+  (swap! (.attributes this) assoc key value)
+  this)
+
+(add-method! basis :clone clone)
+
+(add-method! basis :messages
+  (fn messages [^Head this] (keys @(.methods this))))
+
+(add-method! basis :id
+  (fn name [^Head this] @(.id this)))
+
+(add-method! basis :name
+  (fn name [^Head this] @(.name this)))
 
 (defmethod basis :name=
   [^Head this name]
   (reset! (.name this) name)
   this)
 
-(def root (head :methods (atom @(.methods basis) :validator map?)))
+(def root (basis :clone))
 
 (defmethod root :add-ref
   [^Head this name]
@@ -130,8 +155,8 @@
          assoc name (head :name name :version (.version this)))
   this)
 
-(defmethod basis :get-ref
-  [this name]
+(defmethod root :get-ref
+  [^Head this name]
   (get @(.attributes this) name))
 
 (comment
@@ -140,4 +165,7 @@
   (name (root :get-ref "welcome/index"))
   (name (root :name= "root"))
   (name (root :get-ref "welcome/index"))
+  (basis :messages)
+  (root :messages)
+  (basis :clone)
   )
