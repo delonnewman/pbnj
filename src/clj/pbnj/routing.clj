@@ -5,16 +5,23 @@
 (defn route
   [path
    & {:keys [name to via formats]
-      :or {via #{:get} formats #{:html}}}]
-  #:route{:path path
-          :src to
-          :name name
-          :methods (if (set? via) via (set [via]))
-          :formats formats})
+      :or {via #{:get} formats #{:html}}
+      :as options}]
+  (let [base
+        #:route{:path path
+                :methods (if (set? via) via (set [via]))
+                :formats formats}]
+    (if name
+      (assoc base :route/name name)
+      (if-let [src to]
+        (assoc base :route/src src)
+        (throw (ex-info "invalid route :to is required" (assoc options :path path)))))))
 
 (comment
   (macroexpand '(router-form :get))
   (route "/" :via #{:get} :to #path "welcome#index" :name "hey")
+
+  (route "/" :to #path "welcom#index")
   )
 
 (defn route? [r]
@@ -82,18 +89,18 @@
   (resources :recordings)
 
   (routes
-   (route "/" :name "root" :to #pbnj/path "welcome/index")
-   (list (route "/" :name "root" :to #pbnj/path "welcome/index" :via #{:post}))
+   (route "/" :name "root" :to #pbnj/path "welcome#index")
+   (route "/" :name "root" :to #pbnj/path "welcome#index" :via #{:post})
    )
 
   (mapcat resources [:photos :recordings])
 
-  (let [r (route "/" :name "root" :to #pbnj/path "welcome/index")]
+  (let [r (route "/" :name "root" :to #pbnj/path "welcome#index")]
     (route? r))
 
    (routes
-    (route "/" :name "root" :to #pbnj/path "welcome/index")
-    (route "/entities" :name "entities" :to #pbnj/path "entities/list")
-    (route "/entities/:entity_id" :name "entities" :to #pbnj/path "entities/show")
-    (route "/entities/:entity_id" :name "entities" :to #pbnj/path "entities/update" :via :post))
+    (route "/" :name "root" :to #pbnj/path "welcome#index")
+    (route "/entities" :name "entities" :to #pbnj/path "entities#list")
+    (route "/entities/:entity_id" :name "entities" :to #pbnj/path "entities#show")
+    (route "/entities/:entity_id" :name "entities" :to #pbnj/path "entities#update" :via :post))
   )
