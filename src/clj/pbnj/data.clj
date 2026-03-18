@@ -59,21 +59,23 @@
   (fn? (find-method obj msg)))
 
 (defn message-name [msg]
-  (cond (keyword? msg) msg
-        (symbol? msg) (keyword (name msg))
-        (vector? msg) (msg 0)
-        (list? msg) (let [tag (first msg)]
-                      (if (symbol? tag)
-                        (keyword (name tag))
-                        tag))
-        :else (throw (ex-info (str "Invalid message: " (pr-str msg)) {:msg msg}))))
+  (cond
+    (keyword? msg) msg
+    (symbol? msg) (keyword (name msg))
+    (vector? msg) (msg 0)
+    (list? msg) (let [tag (first msg)]
+                  (if (symbol? tag)
+                    (keyword (name tag))
+                    tag))
+    :else (throw (ex-info (str "Invalid message: " (pr-str msg)) {:msg msg}))))
 
 (defn message-args [msg]
-  (cond (keyword? msg) '()
-        (symbol? msg) '()
-        (vector? msg) (subvec msg 1)
-        (list? msg) (rest msg)
-        :else (throw (ex-info (str "Invalid message: " (pr-str msg)) {:msg msg}))))
+  (cond
+    (keyword? msg) '()
+    (symbol? msg) '()
+    (vector? msg) (subvec msg 1)
+    (list? msg) (rest msg)
+    :else (throw (ex-info (str "Invalid message: " (pr-str msg)) {:msg msg}))))
 
 (defn send-message [obj msg]
   (let [name   (message-name msg)
