@@ -9,7 +9,7 @@
   #:route{:path path
           :src to
           :name name
-          :methods via
+          :methods (if (set? via) via (set [via]))
           :formats formats})
 
 (comment
