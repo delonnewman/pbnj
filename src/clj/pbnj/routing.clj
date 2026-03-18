@@ -1,7 +1,6 @@
 (ns pbnj.routing
   (:refer-clojure :exclude [get])
-  (:require [pbnj.paths :as path :refer [path]]
-            [clojure.string :as str]))
+  (:require [pbnj.paths :as path :refer [path]]))
 
 (defn route
   [path
