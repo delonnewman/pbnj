@@ -13,19 +13,9 @@
           :methods via
           :formats formats})
 
-(defmacro ^:private router-form [method]
-  `(def ~(symbol (name method))
-     (fn [path# & opts#]
-       (apply route (cons path# (cons :via (cons #{~method} opts#)))))))
-
-(router-form :get)
-(router-form :post)
-(router-form :put)
-(router-form :delete)
-
 (comment
   (macroexpand '(router-form :get))
-  (get "/" :to #path "welcome#index" :name "hey")
+  (route "/" :via #{:get} :to #path "welcome#index" :name "hey")
   )
 
 (defn route? [r]
@@ -37,44 +27,68 @@
    (contains? r :route/formats)))
 
 (defn routes
-  ([r] (if (route? r) #{r} r))
-  ([r & rs] (set (concat (routes r) rs))))
+  ([r] (if (route? r) (list r) r))
+  ([r & rs] (concat (routes r) rs)))
 
 (defn resources
   ([key]
    (let [plural (name key) singular plural]
      (routes
-      (get (str "/" plural)
-           :to (path plural "list")
-           :name plural)
-      (get (str "/" plural "/new")
-           :to (path plural "new")
-           :name (str "new_" singular))
-      (post (str "/" plural)
-            :to (path plural "create")
-            :name plural)
-      (get (str "/" plural "/:id")
-           :to (path plural "show")
-           :name (str "new_" singular))
-      (get (str "/" plural "/:id/edit")
-           :to (path plural "edit")
-           :name (str "edit_" singular))
-      (route (str "/" plural "/:id")
-             :to (path plural "edit")
-             :name (str "update_" singular)
-             :via #{:post :put})
-      (delete (str "/" plural "/:id")
-              :to (path plural "remove")
-              :name (str "delete_" singular)))))
+      (route
+       (str "/" plural)
+       :via #{:get}
+       :to (path plural "list")
+       :name plural)
+      (route
+       (str "/" plural "/new")
+       :via #{:get}
+       :to (path plural "new")
+       :name (str "new_" singular))
+      (route
+       (str "/" plural)
+       :via #{:post}
+       :to (path plural "create")
+       :name plural)
+      (route
+       (str "/" plural "/:id")
+       :via #{:get}
+       :to (path plural "show")
+       :name (str "new_" singular))
+      (route
+       (str "/" plural "/:id/edit")
+       :via #{:get}
+       :to (path plural "edit")
+       :name (str "edit_" singular))
+      (route
+       (str "/" plural "/:id")
+       :to (path plural "edit")
+       :name (str "update_" singular)
+       :via #{:post :put})
+      (route
+       (str "/" plural "/:id")
+       :via #{:delete}
+       :to (path plural "remove")
+       :name (str "delete_" singular)))))
    ([key & keys]
-    (routes
+    (apply
+     routes
      (resources key)
-     (apply routes (map resources keys)))))
+     (mapcat resources keys))))
 
 
 (comment
   (resources :photos :recordings)
-  
+
+  (resources :photos)
+  (resources :recordings)
+
+  (routes
+   (route "/" :name "root" :to #pbnj/path "welcome/index")
+   (list (route "/" :name "root" :to #pbnj/path "welcome/index" :via #{:post}))
+   )
+
+  (mapcat resources [:photos :recordings])
+
   (let [r (route "/" :name "root" :to #pbnj/path "welcome/index")]
     (route? r))
 
