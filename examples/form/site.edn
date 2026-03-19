@@ -1,6 +1,6 @@
 {
- :title "Contact Form"
- :author "Delon R. Newman"
- :description "Please enter your contact information"
- :lang "en"
+ :site/title "Contact Form"
+ :site/author "Delon R. Newman"
+ :site/description "Please enter your contact information"
+ :site/lang "en"
  }

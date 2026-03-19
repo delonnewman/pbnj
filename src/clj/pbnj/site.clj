@@ -9,10 +9,8 @@
     (if-not (.exists f)
       (throw (ex-info "Invalid directory" { :dir dir }))
       (let [base (-> f (io/file *config-file*) .getAbsoluteFile)]
-        (if-not (.exists base)
-          #:site{:root-dir f}
-          (merge
-           #:site{:root-dir f, :config base}
-           (edn/read-string (slurp base))))))))
+        (merge
+         #:site{:root-dir f}
+         (if-not (.exists base) {} (edn/read-string (slurp base))))))))
 
 (defn build [site])
