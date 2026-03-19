@@ -11,6 +11,8 @@
       (let [base (-> f (io/file *config-file*) .getAbsoluteFile)]
         (merge
          #:site{:root-dir f}
-         (if-not (.exists base) {} (edn/read-string (slurp base))))))))
+         (if-not (.exists base)
+           {}
+           (edn/read-string (slurp base))))))))
 
 (defn build [site])
