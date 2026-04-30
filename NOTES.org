@@ -133,17 +133,6 @@ https://clojurescript.org
 https://docs.racket-lang.org/ecmascript/index.html
 https://docs.racket-lang.org/racketscript/index.html
 
-** PHP
-https://github.com/phel-lang/phel-lang
-https://github.com/rodnaph/clj-php
-https://github.com/john-shaffer/php-clj
-https://github.com/jphp-group/jphp
-
-https://symfony.com
-https://github.com/symfony/yaml
-https://github.com/symfony/http-foundation
-https://github.com/symfony/security-csrf
-
 ** HTML
 https://github.com/omcljs/om/blob/master/src/main/om/dom.cljc
 https://github.com/weavejester/hiccup
@@ -164,4 +153,35 @@ https://jekyllrb.com
 
 * Meta Language (WonderScript)
 - JavaScript without the warts
+- Clojure (could leverage CLJS)
+
+** Compile to PHP Languages
+- https://github.com/haileys/Fructose
+- https://github.com/phel-lang/phel-lang
+- https://github.com/gosukiwi/Blueberry
+- https://haxe.org
+- https://github.com/SvenMichaelKlose/tre (compiles Lisp to both PHP & JS)
+- https://github.com/scriptor/pharen
+- https://github.com/btwael/mammouth
+- https://tht.dev
+
+** Clojure to PHP Trans-compilers
+- https://github.com/rodnaph/clj-php
+- https://github.com/john-shaffer/php-clj
+
+** PHP & JVM Integration
+- https://github.com/abertschi/graalphp
+- https://github.com/jphp-group/jphp
+
+** PHP Infrastructure
+- https://symfony.com
+- https://github.com/symfony/yaml
+- https://github.com/symfony/http-foundation
+- https://github.com/symfony/security-csrf
+  
+** Web Framework as a Language
+- https://tht.dev
+- https://svelte.dev
+- https://github.com/mint-lang/mint
+- https://github.com/duck-compiler/duckc
 
